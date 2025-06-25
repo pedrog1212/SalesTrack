@@ -14,6 +14,13 @@ string apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 
 var builder = WebApplication.CreateBuilder(args);
 
+// base address logic 
+builder.Services.AddHttpClient("API", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
+});
+
+
 // SalesTrack.KPIService/OpenAiKpiService.cs
 builder.Services.AddScoped<OpenAiKpiService>();
 

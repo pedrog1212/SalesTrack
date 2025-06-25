@@ -11,6 +11,10 @@ namespace SalesTrack.WebFrontend.Services
         {
             _http = http;
         }
+        public InventoryApiClient(IHttpClientFactory httpClientFactory)
+        {
+            _http = httpClientFactory.CreateClient("API");
+        }
 
         public async Task<List<InventoryDto>> GetInventoryItemsAsync()
         {

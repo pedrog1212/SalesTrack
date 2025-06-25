@@ -10,6 +10,10 @@ namespace SalesTrack.WebFrontend.Services
         {
             _http = http;
         }
+        public OrderStatusApiClient(IHttpClientFactory httpClientFactory)
+        {
+            _http = httpClientFactory.CreateClient("API");
+        }
 
         // GET all order statuses
         public async Task<List<OrderStatusDto>> GetOrderStatusesAsync()

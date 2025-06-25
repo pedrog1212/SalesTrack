@@ -10,6 +10,10 @@ namespace SalesTrack.WebFrontend.Services
         {
             _http = http;
         }
+        public OrderApiClient(IHttpClientFactory httpClientFactory)
+        {
+            _http = httpClientFactory.CreateClient("API");
+        }
 
         public async Task<List<OrderDto>> GetOrdersAsync()
         {

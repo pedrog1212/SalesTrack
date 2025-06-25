@@ -1,3 +1,4 @@
+using System.Net.Http;
 using SalesTrack.Shared.DTOs;
 
 namespace SalesTrack.WebFrontend.Services
@@ -10,7 +11,10 @@ namespace SalesTrack.WebFrontend.Services
         {
             _http = http;
         }
-
+        public CustomerApiClient(IHttpClientFactory httpClientFactory)
+        {
+            _http = httpClientFactory.CreateClient("API");
+        }
         public async Task<List<CustomerDto>> GetCustomersAsync()
         {
             var response = await _http.GetAsync("api/customers");

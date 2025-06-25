@@ -10,6 +10,10 @@ namespace SalesTrack.WebFrontend.Services
         {
             _http = http;
         }
+        public OrderTypeApiClient(IHttpClientFactory httpClientFactory)
+        {
+            _http = httpClientFactory.CreateClient("API");
+        }
 
         // GET all order types
         public async Task<List<OrderTypeDto>> GetOrderTypesAsync()
