@@ -1,0 +1,6 @@
+@SalesTrack.CRM_HostAddress = http://localhost:5135
+
+GET {{SalesTrack.CRM_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,343 @@
+﻿@page "{id?}"
+@model SalesTrack.WebFrontend.Pages.Orders.EditModel
+
+@{
+    ViewData["Title"] = Model.Order.Id == 0 ? "Add Sales Order" : "Edit Sales Orders";
+}
+
+<div class="container mx-auto px-4 py-6 max-w-3xl mx-auto p-6 border-dark-subtle shadow rounded-3 bg-primary-subtle">
+
+    <h2 class="text-2xl font-bold mb-4">@ViewData["Title"]</h2>
+
+    <form method="post" class="space-y-4">
+
+        <input type="hidden" asp-for="Order.Id" />
+
+        <div class="flex items-center space-x-4 mb-4">
+            <label class="text-sm font-medium text-gray-700 min-w-[120px]">Customer Name</label>
+
+            @if (Model.Customers == null)
+            {
+                <p class="text-red-600">Customers is null!</p>
+            }
+
+            <select asp-for="Order.CustomerId" asp-items="Model.Customers"
+                    class="form-select max-w-md w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <option value="">-- Select Customer --</option>
+            </select>
+        </div>
+
+        <div class="flex items-center space-x-4 mb-4">
+            <label class="text-sm font-medium text-gray-700 min-w-[120px] pl-15">Order Date</label>
+            <input asp-for="Order.OrderDate" type="date" class="form-input px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+
+        <div class="flex items-center space-x-4 mb-4">
+            <label class="text-sm font-medium text-gray-700 min-w-[120px] pl-15">Delivery Date</label>
+            <input asp-for="Order.DeliveryDate" type="date" class="form-input px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+
+        <div class ="flex items-center space-x-4 mb-4">
+            <label class="block text-sm font-medium text-gray-700">Order Status</label>
+            @if (Model.Statuses == null)
+            {
+                <p class="text-red-600">Statuses is null!</p>
+            }
+
+            <select asp-for="Order.OrderStatusId" asp-items="Model.Statuses" 
+                   class="form-select max-w-md w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </select>
+        </div>
+
+        <div class="flex items-center space-x-4 mb-4">
+            <label class="block text-sm font-medium text-gray-700">Order Type</label>
+            @if (Model.OrderTypes == null)
+            {
+                <p class="text-red-600">Order Types is null!</p>
+            }
+            <select asp-for="Order.OrderTypeId" asp-items="Model.OrderTypes" 
+                    class="form-select max-w-md w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+
+        @if (Model.Order?.Id > 0)
+        {
+            <button type="submit" formaction="?handler=Delete" formmethod="post" class="btn btn-danger">Delete</button>
+        }
+
+    </form>
+
+    <br />
+    <h3 class="text-lg italic mt-8 mb-2">Items List</h3>
+
+    <!-- Table to display OrderItems -->
+    <table class="min-w-full divide-y divide-gray-200 border mb-4">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="px-4 py-2 text-left text-sm font-medium">Product Name</th> <!--index 0 -->
+                <th class="px-4 py-2 text-left text-sm font-medium">SKU</th>   <!--index 1 -->
+                <th class="px-4 py-2 text-left text-sm font-medium">Quantity</th>
+                <th class="px-4 py-2 text-left text-sm font-medium">Unit Price</th>
+                <th class="px-4 py-2 text-left">Total</th>  <!--index 4 -->
+                <th class="px-4 py-2 text-center text-sm font-medium">Actions</th>  <!--index 5 -->
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-100">
+            @foreach (var item in Model.OrderItems)
+            {
+                <tr data-item-id="@item.Id" data-product-id="@item.ProductId" ondblclick="editItemFromRow(@item.Id)" class="hover:bg-gray-50 cursor-pointer">
+                    <td class="px-4 py-2 text-sm">@Model.InventoryLookup[item.ProductId]</td>
+                    <td class="px-4 py-2 text-sm">@Model.InventorySkuLookup[item.ProductId]</td>  
+                    <td class="px-4 py-2 text-sm">@item.Quantity</td>
+                    <td class="px-4 py-2 text-sm">@item.UnitPrice.ToString("C")</td>
+                    <td class="px-4 py-1">@((@item.Quantity * @item.UnitPrice).ToString("C"))</td>
+
+                    <td class="px-4 py-2 text-center">  
+                        <button type="button" 
+                                class="text-red-600 hover:text-red-800"
+                                onclick="deleteItem(@item.Id)">
+                                🗑
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Button to open the Add Item popup -->
+    <button type="button"
+            class="bg-green-600 text-white px-4 py-2 rounded bg-blue-600 text-white rounded hover:bg-green-700"
+            onclick="openAddItemPopup()">
+        + Add Item
+    </button>
+    <!-- Popup Modal for Add/Edit Item -->
+    <div id="itemModal" class="hidden fixed inset-0 bg-black rounded-3 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-secondary-subtle rounded p-6 w-full max-w-md shadow-lg">
+            <h3 class="text-lg italic mt-8 mb-2" id="itemModalTitle">Add Item</h3>
+            
+            <input type="hidden" id="itemId" />
+            <input type="hidden" id="orderId" value="@Model.Order.Id" />
+
+            <div class="mb-2">
+                <label class="block text-sm font-medium">Product Name</label>
+                <select id="itemProductId" class="form-select mt-1 block w-full" onchange="updateSkuField()">
+                    <option value="">-- Select Item --</option>
+                    @foreach (var item in Model.InventoryItems)
+                    {
+                        <option value="@item.Id" data-sku="@item.SKU">@item.ProductName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-2">
+                <label class="block text-sm font-medium">SKU</label>
+                <input type="text" id="itemSKU" class="w-full border px-2 py-1 rounded bg-gray-100" readonly />
+            </div>
+
+            <div class="mb-2">
+                <label class="block text-sm font-medium">Quantity</label>
+                <input type="number" id="itemQuantity" class="w-full border px-2 py-1 rounded" />
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium">Unit Price</label>
+                <input type="number" step="0.01" id="itemUnitPrice" class="w-full border px-2 py-1 rounded" />
+            </div>
+
+            <div class="flex justify-end space-x-2">
+                <button type="button" class="bg-gray-300 px-3 py-1 rounded" onclick="closeItemPopup()">Cancel</button>
+                <button type="button" class="bg-blue-600 text-white px-3 py-1 rounded" onclick="submitItem()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+            // Exposing existing productIds from server to JavaScript
+            const existingProductIds = @Html.Raw(Json.Serialize(Model.OrderItems.Select(i => i.ProductId).ToList()));
+
+            // expose Inventory as JavaScript dictionary
+            const inventoryStock = {
+            @foreach (var item in Model.InventoryItems)
+            {
+                <text>@item.Id: @item.QuantityAvailable,</text>
+            }
+            };
+
+
+            function openAddItemPopup() {
+                document.getElementById('itemModalTitle').textContent = "Add Item";
+                document.getElementById('itemId').value = "";
+                document.getElementById('itemProductId').value = "";
+                document.getElementById('itemSKU').value = "";
+                document.getElementById('itemQuantity').value = "";
+                document.getElementById('itemUnitPrice').value = "";
+
+                document.getElementById('itemModal').classList.remove('hidden');
+
+                console.log("🟢 openAddItemPopup called");
+            }
+
+            function closeItemPopup() {
+                document.getElementById('itemModal').classList.add('hidden');
+            }
+
+            function submitItem() {
+
+                event.preventDefault(); // prevent form from reloading or submitting normally
+
+                const id        = parseInt(document.getElementById('itemId').value);
+                const orderId   = parseInt(document.getElementById('orderId').value);
+                const productId = parseInt(document.getElementById('itemProductId').value);
+                const sku       = document.getElementById('itemSKU').value;
+                const quantity  = parseInt(document.getElementById('itemQuantity').value);
+                const price     = parseFloat(document.getElementById('itemUnitPrice').value);
+
+                const availableStock = inventoryStock[productId] ?? 0;
+
+                console.log("Submitting item with values:", {
+                   id,
+                   orderId,
+                   productId,
+                   sku,
+                   quantity,
+                   price
+                });
+
+                if (!orderId || isNaN(productId) || !sku || isNaN(quantity) || isNaN(price)) {
+                    alert("All fields are required.");
+                    return;
+                }
+
+                /* check duplicates for new items (id empty or 0)
+                 if (!id || parseInt(id) === 0) {
+                     if (existingProductIds.includes(productId)) {
+                         const selectedOption = document.querySelector(`#itemProductId option[value='${productId}']`);
+                         const productName = selectedOption ? selectedOption.textContent : "This product";
+                         alert(`${productName} is already on the Order. Cancel this Item Addition and Edit the existing one.`);
+                         return;
+                     }
+                 }*/
+
+                // Check duplicates for both add and edit
+                if (existingProductIds.includes(productId)) {
+                    // In edit mode, allow if the productId belongs to the current item being edited
+                    const rowWithSameProductId = document.querySelector(`tr[data-product-id="${productId}"]`);
+                    const existingItemId = rowWithSameProductId ? parseInt(rowWithSameProductId.dataset.itemId) : null;
+
+                    if (!id || id !== existingItemId) {
+                        const selectedOption = document.querySelector(`#itemProductId option[value='${productId}']`);
+                        const productName = selectedOption ? selectedOption.textContent : "This product";
+                        alert(`${productName} is already on the Order. Cancel this Item Addition and Edit the existing one.`);
+                        return;
+                    }
+                }
+
+                const payload = {
+                    id: id ? parseInt(id) : 0,
+                    orderId: parseInt(orderId),
+                    productId: parseInt(productId),
+                    sku: sku,
+                    quantity: quantity,
+                    unitPrice: price
+                };
+
+                if (quantity > availableStock) {
+                    if (!confirm(`⚠ Warning: Available stock is ${availableStock}, but you're adding ${quantity}. Proceed anyway?`)) {
+                        return;
+                    }
+                }
+
+                const method = id ? "PUT" : "POST";
+                const url = id ? `/api/orderitems/${id}` : "/api/orderitems";
+
+                console.log("SENDING Request", method, url, payload); // Debug line
+
+                fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+                .then (res => {
+                    if (res.ok) {
+                        console.log("Item saved successfully.");
+                        location.reload();
+                    }
+                    else {
+                        res.text().then ( msg => {
+                            console.error("Error saving item:", msg);
+                            alert("Error saving item:\n" + msg);
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error("Fetch error:", err);
+                    alert("Network error while saving item:\n" + err.message);
+                });
+
+                console.log("🟢 submitItem called");
+             }
+
+
+            function deleteItem(id) {
+                if (!confirm("Are you sure you want to delete this item?")) return;
+
+                fetch(`/api/orderitems/${id}`, { method: "DELETE" })
+                    .then(res => {
+                        if (res.ok) location.reload();
+                        else res.text().then(msg => alert("Error deleting item:\n" + msg));
+                    })
+                    .catch(err => alert("Network error deleting item:\n" + err.message));
+
+                console.log("🟢 deleteItem called");
+
+            }
+
+                // Handle row double-click for editing
+                function editItemFromRow(itemId) {
+                // Find the row that was double-clicked
+                //const row = document.querySelector(`tr[ondblclick='editItemFromRow(${itemId})']`);
+                const row = document.querySelector(`tr[data-product-id][data-item-id='${itemId}']`);
+
+                if (!row) return;
+
+                const productId = row.dataset.productId;
+                const quantityText = row.children[2].textContent.trim();
+                const quantity = parseInt(quantityText, 10) || 0;
+
+                const unitPrice = row.children[3].textContent.replace(/[^0-9.]/g, '').trim();
+
+                // Call existing popup fill logic
+                openEditItemPopup(itemId, productId, quantity, unitPrice);
+            }
+
+            function openEditItemPopup(id, productId, quantity, price) {
+                
+                document.getElementById('itemModalTitle').textContent = "Edit Item";
+                document.getElementById('itemId').value = id;
+                document.getElementById('itemProductId').value = productId;
+                document.getElementById('itemQuantity').value = quantity;
+                document.getElementById('itemUnitPrice').value = price;
+
+                // Update SKU field based on productId
+                updateSkuField();
+
+                document.getElementById('itemModal').classList.remove('hidden');
+            }
+
+            function updateSkuField() {
+                const productDropdown = document.getElementById("itemProductId");
+                const selectedOption = productDropdown.options[productDropdown.selectedIndex];
+                const sku = selectedOption.dataset.sku || "";
+                document.getElementById("itemSKU").value = sku;
+            }
+
+            console.log("... Script loaded.");
+
+        </script>
+
+    }
+
+</div>

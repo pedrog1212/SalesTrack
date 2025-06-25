@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: salestrack-web
+    plan: starter
+    branch: main
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: SalesTrack
+          property: connectionString
+      - key: JwtSettings__Key
+        value: 8QFtzF8MbUiNDBUdF0Pw/g==Hus33sS7y0aBBnbqqEkCuA==
+
+databases:
+  - name: SalesTrack
+    databaseName: SalesTrack
+    user: postgres
+    plan: admin
+

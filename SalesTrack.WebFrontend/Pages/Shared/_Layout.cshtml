@@ -1,0 +1,126 @@
+﻿@{
+    var currentPage = ViewContext.RouteData.Values["Page"]?.ToString();
+    var isHomePage = string.Equals(currentPage, "/Index", StringComparison.OrdinalIgnoreCase);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SalesTrack.WebFrontend</title>
+
+    <!-- Tailwind CSS -->
+    <link asp-href-include="css/output.css" rel="stylesheet" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Site CSS -->
+    <link asp-href-include="css/site.css" rel="stylesheet" asp-append-version="true" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            background-image: url('/images/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            padding: 2rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        footer {
+            margin-top: auto;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(5px);
+            padding: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white bg-opacity-75 shadow-sm">
+            <div class="container">
+                <a class="navbar-brand fw-bold" asp-area="" asp-page="/Index">Welcome to SalesTrack</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-page="/Index">Home</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-page="/Customers/Index"
+                               data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="View, add, and manage customer records.">Customers</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-page="/Orders/Index"
+                               data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Browse and manage customer sales orders.">Orders</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-page="/Inventory/Index"
+                               data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="View, add, and manage inventory items.">Inventory</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-page="/Privacy">Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    @if (!isHomePage)
+    {
+        <main class="container glass-container">
+            @RenderBody()
+        </main>
+    }
+    else{
+        @RenderBody()
+    }
+    <!-- else do nothing when home page -->
+    
+        <!-- else do nothing when home page -->
+
+
+    <footer class="border-top text-muted">
+        &copy; 2025 - SalesTrack.Web - <a asp-area="" asp-page="/Privacy">Privacy</a>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        // enable bootstrap tooltips globally
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
+</body>
+</html>

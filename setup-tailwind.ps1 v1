@@ -1,0 +1,43 @@
+# setup-tailwind.ps1
+
+Write-Host "Initializing Tailwind CSS in SalesTrack.WebFrontend..."
+
+# Change directory to WebFrontend project
+Set-Location "./SalesTrack.WebFrontend"
+
+# Initialize npm
+Write-Host "Running npm init..."
+npm init -y
+
+# Install TailwindCSS and dependencies
+Write-Host "Installing Tailwind CSS and dependencies..."
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+
+# Update tailwind.config.js
+$tailwindConfigPath = "tailwind.config.js"
+$contentLine = "  content: [`"\"./Pages/**/*.{cshtml,html}\", \"./Views/**/*.{cshtml,html}\", \"./wwwroot/index.html\"`"],"
+$contentLine = "  content: [`"\"./Pages/**/*.{cshtml,html}\", \"./Views/**/*.{cshtml,html}\", \"./Pages/Shared/**/*.cshtml\"`"],"
+
+(Get-Content $tailwindConfigPath) -replace 'content: \[\],', $contentLine | Set-Content $tailwindConfigPath
+
+# Create CSS folder and input file
+$cssFolder = "wwwroot/css"
+if (!(Test-Path $cssFolder)) {
+    New-Item -ItemType Directory -Path $cssFolder
+}
+$inputCss = "$cssFolder/site.css"
+@"
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+"@ | Set-Content $inputCss
+
+# Build Tailwind CSS output
+Write-Host "Building Tailwind output.css..."
+npx tailwindcss -i ./wwwroot/css/site.css -o ./wwwroot/css/output.css --minify
+
+Write-Host "Tailwind CSS is now set up."
+
+Write-Host "`n Make sure to include this line in your Pages/Shared/_Layout.cshtml:"
+Write-Host '<link href="~/css/output.css" rel="stylesheet" />' -ForegroundColor Green

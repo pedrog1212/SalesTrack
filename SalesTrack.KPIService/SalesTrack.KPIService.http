@@ -1,0 +1,6 @@
+@SalesTrack.KPIService_HostAddress = http://localhost:5261
+
+GET {{SalesTrack.KPIService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

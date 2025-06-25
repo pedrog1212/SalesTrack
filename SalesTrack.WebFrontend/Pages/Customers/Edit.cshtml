@@ -1,0 +1,40 @@
+@page "{id?}"
+@model SalesTrack.WebFrontend.Pages.Customers.EditModel
+
+<div class="container mx-auto px-4 py-6 max-w-3xl mx-auto p-6 border-dark-subtle shadow rounded-3 bg-body-secondary">
+    <h1 class="text-2xl font-bold mb-4">@ViewData["Title"]</h1>
+
+    <form method="post">
+        <input type="hidden" asp-for="Customer.Id" />
+
+        <label class="block text-sm font-medium text-gray-700">Customer FullName</label>
+        <input asp-for="Customer.FullName" class="form-control" />
+        <span asp-validation-for="Customer.FullName" class="text-danger"></span>
+
+        <label class="block text-sm font-medium text-gray-700">Email</label>
+        <input asp-for="Customer.Email" class="form-control" />
+        <span asp-validation-for="Customer.Email" class="text-danger"></span>
+
+        <label class="block text-sm font-medium text-gray-700">PhoneNumber</label>
+        <input asp-for="Customer.PhoneNumber" class="form-control" />
+        <span asp-validation-for="Customer.PhoneNumber" class="text-danger"></span>
+
+        <label class="block text-sm font-medium text-gray-700">Address</label>
+        <input asp-for="Customer.Address" class="form-control" />
+        <span asp-validation-for="Customer.Address" class="text-danger"></span>
+
+        <br />
+
+        <div class="flex justify-between items-center space-x-2">
+            <button type="submit" class="btn btn-primary">Save</button>
+
+            @if (Model.Customer?.Id > 0)
+            {
+                <button type="submit" formaction="?handler=Delete" formmethod="post" class="btn btn-danger">Delete</button>
+            }
+
+            <a asp-page="Index" class="px-4 py-2 bg-gray-400 text-black-50 rounded hover:bg-gray-500">Cancel</a>
+        </div>
+
+    </form>
+</div>

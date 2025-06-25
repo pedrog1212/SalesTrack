@@ -1,0 +1,18 @@
+﻿@page
+@model SalesTrack.WebFrontend.Pages.KPI.KPIDashboardModel
+@{
+    ViewData["Title"] = "KPI Dashboard";
+}
+
+<h1>KPI Dashboard</h1>
+
+@if (!string.IsNullOrEmpty(Model.AnalysisResult))
+{
+    <div class="card p-3 mb-3 bg-light">
+        <pre>@Model.AnalysisResult</pre>
+    </div>
+}
+else
+{
+    <p>Loading KPI analysis...</p>
+}
