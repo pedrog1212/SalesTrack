@@ -31,6 +31,6 @@ COPY --from=build /app/publish .
 
 # Set to Production
  ENV ASPNETCORE_ENVIRONMENT=Production
-# ENV ASPNETCORE_ENVIRONMENT=Development
+#ENV ASPNETCORE_ENVIRONMENT=Development
 
 ENTRYPOINT ["dotnet", "SalesTrack.WebFrontend.dll"]
