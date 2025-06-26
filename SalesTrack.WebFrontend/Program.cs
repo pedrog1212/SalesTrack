@@ -20,7 +20,7 @@ builder.WebHost.UseUrls("http://0.0.0.0:80");
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
 
 Console.WriteLine($"***** API Base URL: {builder.Configuration["ApiBaseUrl"]}");
