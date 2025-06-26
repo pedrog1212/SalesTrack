@@ -6,7 +6,9 @@ using SalesTrack.CRM.Models;
 namespace SalesTrack.CRM.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    //[Route("api/[controller]")]
+    [Route("customers")]
+
     public class CustomersController : ControllerBase
     {
         private readonly CrmDbContext _context;
@@ -14,17 +16,22 @@ namespace SalesTrack.CRM.Controllers
         public CustomersController(CrmDbContext context) => _context = context;
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers() => await _context.Customers.ToListAsync();
+        public async Task<IActionResult> GetCustomers()
+        {
+            var customers = await _context.Customers.ToListAsync();
+            return Ok(customers);
+        }
+
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Customer>> GetCustomer(int id)
+        public async Task<IActionResult> GetCustomer(int id)
         {
             var customer = await _context.Customers.FindAsync(id);
-            return customer == null ? NotFound() : customer;
+            return customer == null ? NotFound() : Ok(customer);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
+        public async Task<IActionResult> PostCustomer(Customer customer)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState); // will return validation error details
@@ -39,8 +46,10 @@ namespace SalesTrack.CRM.Controllers
         public async Task<IActionResult> PutCustomer(int id, Customer customer)
         {
             if (id != customer.Id) return BadRequest();
+
             _context.Entry(customer).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+
             return NoContent();
         }
 
@@ -49,53 +58,11 @@ namespace SalesTrack.CRM.Controllers
         {
             var customer = await _context.Customers.FindAsync(id);
             if (customer == null) return NotFound();
+
             _context.Customers.Remove(customer);
             await _context.SaveChangesAsync();
+
             return NoContent();
         }
     }
 }
-
-/*
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomers()
-        {
-            var customers = await _context.Customers
-                .Select(c => new CustomerDto
-                {
-                    Id = c.Id,
-                    FullName = c.FullName,
-                    Email = c.Email,
-                    PhoneNumber = c.PhoneNumber,
-                    Address = c.Address
-                })
-                .ToListAsync();
-
-            return Ok(customers);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerDto>> GetCustomer(int id)
-        {
-            var customer = await _context.Customers
-                .Where(c => c.Id == id)
-                .Select(c => new CustomerDto
-                {
-                    Id = c.Id,
-                    FullName = c.FullName,
-                    Email = c.Email,
-                    PhoneNumber = c.PhoneNumber,
-                    Address = c.Address
-                })
-                .FirstOrDefaultAsync();
-
-            if (customer == null) return NotFound();
-
-            return Ok(customer);
-        }
-
-        // Optional: POST, PUT, DELETE using CustomerDto if needed
-    }
-}
-*/

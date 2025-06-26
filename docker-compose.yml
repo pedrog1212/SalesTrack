@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./SalesTrack.CRM
+      dockerfile: Dockerfile
+    image: salestrack-backend
+    container_name: salestrack-backend
+    ports:
+      - "7179:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    networks:
+      - salestrack-net
+
+  frontend:
+    build:
+      context: ./SalesTrack.WebFrontend
+      dockerfile: Dockerfile
+    image: salestrack-frontend
+    container_name: salestrack-frontend
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ApiBaseUrl=http://salestrack-backend
+    depends_on:
+      - backend
+    networks:
+      - salestrack-net
+
+networks:
+  salestrack-net:
+    driver: bridge

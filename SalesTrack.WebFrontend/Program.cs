@@ -14,12 +14,24 @@ string apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 
 var builder = WebApplication.CreateBuilder(args);
 
+// listen on all network interfaces, including inside a container.
+builder.WebHost.UseUrls("http://0.0.0.0:80");
+
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+
+
+Console.WriteLine($"***** API Base URL: {builder.Configuration["ApiBaseUrl"]}");
+Console.WriteLine("***** Using connection string: " + builder.Configuration.GetConnectionString("DefaultConnection"));
+
+
 // base address logic 
 builder.Services.AddHttpClient("API", client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
 });
-
 
 // SalesTrack.KPIService/OpenAiKpiService.cs
 builder.Services.AddScoped<OpenAiKpiService>();
@@ -31,40 +43,46 @@ builder.Services.AddScoped<OrderInventoryService>();
 // Register CrmDbContext in Program.cs
 builder.Services.AddDbContext<CrmDbContext>(options =>
 
-    options.UseNpgsql(builder.Configuration.GetConnectionString("CrmDbConnection"))
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")) // CrmDbConnection 
     .EnableSensitiveDataLogging()
            .LogTo(Console.WriteLine, LogLevel.Information)
 );
 
-// Register the HTTP Client
-builder.Services.AddHttpClient<CustomerApiClient>(client => 
+// Register the HTTP Clients
+builder.Services.AddHttpClient<CustomerApiClient>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7179");  // this matches the CRM API port
+    //client.BaseAddress = new Uri("https://localhost:7179");  // this matches the CRM API port
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
 });
 
 builder.Services.AddHttpClient<OrderApiClient>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7179"); // this matches the CRM API port
+    //client.BaseAddress = new Uri("https://localhost:7179"); // this matches the CRM API port
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
 });
 
 builder.Services.AddHttpClient<OrderStatusApiClient>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7179"); // this matches the CRM API port
+    //client.BaseAddress = new Uri("https://localhost:7179"); // this matches the CRM API port
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
 });
 
 builder.Services.AddHttpClient<OrderTypeApiClient>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7179"); // this matches the CRM API port
+    //client.BaseAddress = new Uri("https://localhost:7179"); // this matches the CRM API port
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
 });
 
 builder.Services.AddHttpClient<OrderItemsApiClient>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7179"); // this matches the CRM API port
+    //client.BaseAddress = new Uri("https://localhost:7179"); // this matches the CRM API port
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
 });
 
 builder.Services.AddHttpClient<InventoryApiClient>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7179"); // this matches the CRM API port
+    //client.BaseAddress = new Uri("https://localhost:7179"); // this matches the CRM API port
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
 });
 
 builder.Services.AddCors(options =>
@@ -107,6 +125,8 @@ app.UseAuthorization();
 app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
+
+//app.MapGet("/", () => "Hello from Docker!");
 
 app.Run();
 

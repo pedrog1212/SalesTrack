@@ -6,7 +6,6 @@ namespace SalesTrack.WebFrontend.Services
     public class CustomerApiClient
     {
         private readonly HttpClient _http;
-
         public CustomerApiClient(HttpClient http)
         {
             _http = http;
