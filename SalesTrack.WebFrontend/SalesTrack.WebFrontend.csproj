@@ -36,5 +36,9 @@
 	  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	</Content>
 </ItemGroup>
+	
+<ItemGroup>
+  <Content Include="wwwroot\css\output.css" />
+</ItemGroup>
 
 </Project>

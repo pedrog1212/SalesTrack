@@ -31,6 +31,22 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy.WithOrigins("https://salestrack.onrender.com")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+});
+
+app.UseCors("AllowFrontend");
+
+
+// backend routes
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.UseHttpsRedirection();
 
 app.UseRouting(); //required

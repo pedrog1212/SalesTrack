@@ -17,7 +17,7 @@ namespace SalesTrack.CRM.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<OrderStatusDto>>> Get()
+        public async Task<IActionResult> Get()
         {
             var statuses = await _context.OrderStatuses
                 .Select(s => new OrderStatusDto
