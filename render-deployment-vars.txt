@@ -1,0 +1,6 @@
+
+postgresql://neondb_owner:npg_TJMUcg0dbk8q@ep-floral-mouse-a6enwgad-pooler.us-west-2.aws.neon.tech/neondb?sslmode=require
+
+command: 
+pg_restore --dbname="postgresql://neondb_owner:npg_TJMUcg0dbk8q@ep-floral-mouse-a6enwgad-pooler.us-west-2.aws.neon.tech/neondb?sslmode=require" --no-owner --verbose salestrack.dump
+

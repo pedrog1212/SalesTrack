@@ -27,7 +27,6 @@ builder.Configuration
 Console.WriteLine($"***** API Base URL: {builder.Configuration["ApiBaseUrl"]}");
 Console.WriteLine("***** Using connection string: " + builder.Configuration.GetConnectionString("DefaultConnection"));
 
-
 // base address logic 
 builder.Services.AddHttpClient("API", client =>
 {
