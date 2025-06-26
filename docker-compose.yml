@@ -3,7 +3,7 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ./SalesTrack.CRM
+      context: .
       dockerfile: Dockerfile
     image: salestrack-backend
     container_name: salestrack-backend
