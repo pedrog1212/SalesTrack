@@ -6,9 +6,7 @@ using SalesTrack.CRM.Models;
 namespace SalesTrack.CRM.Controllers
 {
     [ApiController]
-    //[Route("api/[controller]")]
-    [Route("customers")]
-
+    [Route("api/[controller]")]
     public class CustomersController : ControllerBase
     {
         private readonly CrmDbContext _context;
