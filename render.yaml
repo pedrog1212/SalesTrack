@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: backend-api
+    name: salestrack-backend
     env: docker
     plan: free
     branch: main
@@ -10,24 +10,15 @@ services:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: ConnectionStrings__DefaultConnection
-        fromDatabase:
-          name: SalesTrack
-          property: connectionString
+        value: postgresql://neondb_owner:npg_TJMUcg0dbk8q@ep-floral-mouse-a6enwgad-pooler.us-west-2.aws.neon.tech/neondb?sslmode=require
       - key: JwtSettings__Key
         value: 8QFtzF8MbUiNDBUdF0Pw/g==Hus33sS7y0aBBnbqqEkCuA==
-  
+
   - type: web
-    name: frontend-ui
+    name: salestrack-frontend
     env: docker
     plan: free
     dockerfilePath: ./Dockerfile
     envVars:
       - key: ApiBaseUrl
-        value: https://backend-api.onrender.com
-
-databases:
-  - name: SalesTrack
-    databaseName: SalesTrack
-    user: postgres
-    plan: admin
-
+        value: https://salestrack-backend.onrender.com
