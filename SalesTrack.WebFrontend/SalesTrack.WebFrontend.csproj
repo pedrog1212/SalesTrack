@@ -19,22 +19,22 @@
     <ProjectReference Include="..\SalesTrack.Shared.DTOs\SalesTrack.Shared.DTOs.csproj" />
   </ItemGroup>
 	
-	<ItemGroup>
-		<Content Update="appsettings.Production.json">
-			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
+  <ItemGroup>
+	<Content Update="appsettings.Production.json">
+	  <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</Content>
+  </ItemGroup>
 
-	<ItemGroup>
-		<Content Update="appsettings.json">
-			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</Content>
-		<Content Update="appsettings.Development.json">
-			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
+  <ItemGroup>
+	<Content Update="appsettings.json">
+	  <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+	  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	</Content>
+	<Content Update="appsettings.Development.json">
+	  <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+	  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	</Content>
+</ItemGroup>
 
 </Project>
